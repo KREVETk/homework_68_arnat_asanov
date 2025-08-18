@@ -12,12 +12,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #e74c3c;
+        }
+        .like-btn.liked {
+            color: #c0392b;
+        }
+        .like-counter {
+            margin-left: 5px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    {{ user }}
     <div class="container">
         <a class="navbar-brand" href="{% url 'webapp:index' %}">Home</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -43,15 +57,19 @@
                         </form>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile' user.pk %}">Hello {{ user.username }}</a>
+                        <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile' user.pk %}">
+                            Hello {{ user.username }}
+                        </a>
                     </li>
 
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'accounts:login' %}?next={{ request.get_full_path }}">Login</a>
+                        <a class="nav-link active" aria-current="page"
+                           href="{% url 'accounts:login' %}?next={{ request.get_full_path }}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'accounts:registration' %}?next={{ request.get_full_path }}">Registration</a>
+                        <a class="nav-link active" aria-current="page"
+                           href="{% url 'accounts:registration' %}?next={{ request.get_full_path }}">Registration</a>
                     </li>
                 {% endif %}
             </ul>
@@ -60,15 +78,17 @@
 </nav>
 
 
-<div class="container">
+<div class="container mt-4">
     {% block content %}
         Base html
     {% endblock %}
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
+
+<script src="{% static 'scripts/likes.js' %}"></script>
+
 </body>
 </html>
