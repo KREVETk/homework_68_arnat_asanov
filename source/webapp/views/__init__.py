@@ -1,2 +1,4 @@
-from webapp.views.articles import CreateArticleView, UpdateArticleView, DetailArticleView, \
-    ArticleListView, DeleteArticleView
+from webapp.views.articles import (
+    ArticleListView,CreateArticleView,UpdateArticleView,DeleteArticleView,
+    DetailArticleView,like_article, unlike_article,
+)
