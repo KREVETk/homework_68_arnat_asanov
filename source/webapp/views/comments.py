@@ -1,3 +1,4 @@
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -7,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from webapp.forms.comments import CommentForm
 from webapp.models import Article, Comment
-from webapp.models.likes import CommentLike
+from webapp.models.comment_like import CommentLike
 
 
 class CreateCommentView(LoginRequiredMixin, CreateView):
@@ -44,20 +45,18 @@ class DeleteCommentView(PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         return self.object.article.get_absolute_url()
 
-
 @login_required
 @require_POST
-def like_comment(request, id):
-    comment = get_object_or_404(Comment, pk=id)
-    like, created = CommentLike.objects.get_or_create(user=request.user, comment=comment)
-    if not created:
-        return JsonResponse({'likes_count': comment.likes.count(), 'status': 'already_liked'})
-    return JsonResponse({'likes_count': comment.likes.count(), 'status': 'liked'})
-
+def like_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    like_obj, created = CommentLike.objects.get_or_create(user=request.user, comment=comment)
+    status = 'liked' if created else 'already_liked'
+    return JsonResponse({'likes_count': comment.likes.count(), 'status': status})
 
 @login_required
 @require_http_methods(["DELETE"])
-def unlike_comment(request, id):
-    comment = get_object_or_404(Comment, pk=id)
-    CommentLike.objects.filter(user=request.user, comment=comment).delete()
-    return JsonResponse({'likes_count': comment.likes.count(), 'status': 'unliked'})
+def unlike_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    deleted, _ = CommentLike.objects.filter(user=request.user, comment=comment).delete()
+    status = 'unliked' if deleted else 'not_liked'
+    return JsonResponse({'likes_count': comment.likes.count(), 'status': status})

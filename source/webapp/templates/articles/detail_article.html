@@ -1,47 +1,59 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    <title>{{ article.title }}</title>
+<title>{{ article.title }}</title>
 {% endblock %}
-
 
 {% block nav %}
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="{% url 'webapp:add-article' %}">Create article</a>
+        <a class="nav-link" href="{% url 'webapp:add-article' %}">Create article</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="{% url 'webapp:article-update' article.pk %}">Update article</a>
+        <a class="nav-link" href="{% url 'webapp:article-update' article.pk %}">Update article</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="{% url 'webapp:article-delete' article.pk %}">Delete article</a>
+        <a class="nav-link" href="{% url 'webapp:article-delete' article.pk %}">Delete article</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="{% url 'webapp:add-comment' article.pk %}">Create comment</a>
+        <a class="nav-link" href="{% url 'webapp:add-comment' article.pk %}">Create comment</a>
     </li>
 {% endblock %}
 
 {% block content %}
     <div class="article">
-        <h1>Название - {{ article.title }}</h1>
-        <p>Контент - {{ article.content }}</p>
-        <p>Автор - {{ article.author }}</p>
-        <p>Дата создания - {{ article.created_at }} </p>
-        <p>Статус - {{ article.get_status_display }} </p>
+        <h1>{{ article.title }}</h1>
+        <p>{{ article.content }}</p>
+        <p><strong>Автор:</strong> {{ article.author }}</p>
+        <p><strong>Дата создания:</strong> {{ article.created_at }}</p>
+        <p><strong>Статус:</strong> {{ article.get_status_display }}</p>
+
+        <button type="button" class="like-btn {% if user_liked_articles %}liked{% endif %}"
+                data-type="article" data-id="{{ article.pk }}">❤️</button>
+        <span class="like-counter">{{ article.likes.count }}</span>
+
         <hr/>
         <h5>Tags</h5>
         {% for tag in article.tags.all %}
-            {% if forloop.last %} {{ tag }}. {% else %} {{ tag }}, {% endif %}
+            {{ tag }}{% if not forloop.last %}, {% else %}.{% endif %}
+        {% empty %}
+            <p>Нет тегов</p>
         {% endfor %}
 
-        <h5>Comment</h5>
+        <hr/>
+        <h5>Comments</h5>
         {% for comment in comments %}
-            <div class="card">
-                <p>{{ comment.text }}</p>
-                <a href="{% url 'webapp:comment-update' comment.pk %}">Update</a>
-                <a href="{% url 'webapp:comment-delete' comment.pk %}">Delete</a>
-            
-            </div>
+        <div class="card p-2 mb-2">
+            <p>{{ comment.text }}</p>
+            <small>Автор: {{ comment.author }}</small><br>
+            <a href="{% url 'webapp:comment-update' comment.pk %}">Update</a> |
+            <a href="{% url 'webapp:comment-delete' comment.pk %}">Delete</a>
 
+            <button type="button" class="like-btn {% if comment.pk in user_liked_comments %}liked{% endif %}"
+                    data-type="comment" data-id="{{ comment.pk }}">👍</button>
+            <span class="like-counter">{{ comment.likes.count }}</span>
+        </div>
+        {% empty %}
+            <p>Комментариев пока нет</p>
         {% endfor %}
     </div>
 {% endblock %}
